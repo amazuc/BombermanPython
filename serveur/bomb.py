@@ -65,7 +65,6 @@ class Bomb:
             'pos_x': self.pos_x,
             'pos_y': self.pos_y,
             'time': self.time,
-            'bomber': self.bomber.to_json() if self.bomber else None,
             'sectors': self.sectors
         }
 

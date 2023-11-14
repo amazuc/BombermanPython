@@ -168,19 +168,16 @@ class GameVs():
 
         if data.get("type") == "bomb":
             self.bombs.clear()
-            for bomb in data :
-                self.bombs.append(Bomb(json.loads(bomb["data"])["range"],json.loads(bomb["data"])["pos_x"],json.loads(bomb["data"])["pos_y"]))
-                self.bombs[len(bombs)-1].setTime(int(json.loads(bomb["data"])["time"]))
+            self.bombs.append(Bomb(json.loads(data["data"])["range"],json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"]))
+            self.bombs[len(self.bombs)-1].setTime(int(json.loads(data["data"])["time"]))
         
         if data.get("type") == "explosion":
-            self.explosion.clear()
-            for explosion in data :
-                self.explosions.append(Explosion(json.loads(explosion["data"])["sourceX"],json.loads(explosion["data"])["sourceY"],json.loads(explosion["data"])["range"], json.loads(explosion["data"])["time"],json.loads(explosion["data"])["frame"]))
+            self.explosions.clear()
+            self.explosions.append(Explosion(json.loads(data["data"])["sourceX"],json.loads(data["data"])["sourceY"],json.loads(data["data"])["range"], json.loads(data["data"])["time"],json.loads(data["data"])["frame"]))
                 
         if data.get("type") == "power_up":
             self.power_ups.clear()
-            for power_up in data :
-                self.power_ups.append(PowerUp(json.loads(power_up["data"])["pos_x"],json.loads(power_up["data"])["pos_y"],json.loads(power_up["data"])["type"]))
+            self.power_ups.append(PowerUp(json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"],json.loads(data["data"])["type"]))
         
         if data.get("type") == "grid":
             received_data = data.get("data", {})
