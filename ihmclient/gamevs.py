@@ -2,16 +2,12 @@ import json
 from time import sleep
 import pygame
 import sys
-import random
 
 from client import Client
 
-from enums.power_up_type import PowerUpType
 from bomb import Bomb
 from player import Player
 from explosion import Explosion
-from enemy import Enemy
-from enums.algorithm import Algorithm
 from power_up import PowerUp
 
 class GameVs():
@@ -155,6 +151,7 @@ class GameVs():
 
             
     def callBackData(self, data):
+        print(data)
         if data is not None :
             self.autrejoueur = True
         if data.get("type") == "player1":
@@ -162,8 +159,6 @@ class GameVs():
             self.player[0].setY(int(json.loads(data["data"])["pos_y"]))
             self.player[0].setDir(json.loads(data["data"])["direction"])
             self.player[0].setFrame(json.loads(data["data"])["frame"])
-            print("Coord : " + str(self.player[0].pos_x) + " / " + str(self.player[0].pos_y))
-        
 
         if data.get("type") == "player2":
             self.player[1].setX(json.loads(data["data"])["pos_x"])
