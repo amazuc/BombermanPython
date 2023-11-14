@@ -150,54 +150,62 @@ class GameVs():
                             self.client.send('ESCAPE')
 
             
-    def callBackData(self, data):
-        print(data)
-        if data is not None :
+    def callBackData(self, datas):
+        print(datas)
+        if datas is not None :
             self.autrejoueur = True
-        if data.get("type") == "player1":
-            self.player[0].setX(int(json.loads(data["data"])["pos_x"]))
-            self.player[0].setY(int(json.loads(data["data"])["pos_y"]))
-            self.player[0].setDir(json.loads(data["data"])["direction"])
-            self.player[0].setFrame(json.loads(data["data"])["frame"])
+        for data in datas:
+            if data.get("type") == "player1":
+                self.player[0].setX(int(json.loads(data["data"])["pos_x"]))
+                self.player[0].setY(int(json.loads(data["data"])["pos_y"]))
+                self.player[0].setDir(json.loads(data["data"])["direction"])
+                self.player[0].setFrame(json.loads(data["data"])["frame"])
 
-        if data.get("type") == "player2":
-            self.player[1].setX(json.loads(data["data"])["pos_x"])
-            self.player[1].setY(json.loads(data["data"])["pos_y"])
-            self.player[1].setDir(json.loads(data["data"])["direction"])
-            self.player[1].setFrame(json.loads(data["data"])["frame"])
+            if data.get("type") == "player2":
+                self.player[1].setX(json.loads(data["data"])["pos_x"])
+                self.player[1].setY(json.loads(data["data"])["pos_y"])
+                self.player[1].setDir(json.loads(data["data"])["direction"])
+                self.player[1].setFrame(json.loads(data["data"])["frame"])
 
-        if data.get("type") == "bomb":
-            self.bombs.clear()
-            self.bombs.append(Bomb(json.loads(data["data"])["range"],json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"]))
-            self.bombs[len(self.bombs)-1].setTime(int(json.loads(data["data"])["time"]))
-        
-        if data.get("type") == "explosion":
-            self.explosions.clear()
-            self.explosions.append(Explosion(json.loads(data["data"])["sourceX"],json.loads(data["data"])["sourceY"],json.loads(data["data"])["range"], json.loads(data["data"])["time"],json.loads(data["data"])["frame"]))
-                
-        if data.get("type") == "power_up":
-            self.power_ups.clear()
-            self.power_ups.append(PowerUp(json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"],json.loads(data["data"])["type"]))
-        
-        if data.get("type") == "grid":
-            received_data = data.get("data", {})
-            if "grid" in received_data and isinstance(received_data["grid"], str):
-                try:
-                    parsed_grid = json.loads(received_data["grid"])
-                    if isinstance(parsed_grid, list) and all(isinstance(row, list) for row in parsed_grid):
-                        self.grid = parsed_grid
-                    else:
-                        print("Erreur dans le format de la grille reçue.")
-                except json.JSONDecodeError:
-                    print("Erreur de décodage JSON pour la grille.")
-            else:
-                print("La clé 'grid' est absente ou n'est pas une chaîne JSON.")
-                
-        if data.get("type") == "running":
-            self.running = bool(json.loads(data["data"])["running"])
+            if data.get("type") == "bomb":
+                self.bombs.clear()
+                self.bombs.append(Bomb(json.loads(data["data"])["range"],json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"]))
+                self.bombs[len(self.bombs)-1].setTime(int(json.loads(data["data"])["time"]))
+            
+            if data.get("type") == "explosion":
+                self.explosions.clear()
+                self.explosions.append(Explosion(json.loads(data["data"])["sourceX"],json.loads(data["data"])["sourceY"],json.loads(data["data"])["range"], json.loads(data["data"])["time"],json.loads(data["data"])["frame"],json.loads(data["data"])["sectors"]))
+                explosion_data = json.loads(data["data"])                
+                    
+            if data.get("type") == "power_up":
+                self.power_ups.clear()
+                self.power_ups.append(PowerUp(json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"],json.loads(data["data"])["type"]))
+            
+            if data.get("type") == "grid":
+                received_data = data.get("data", {})
+                if "grid" in received_data and isinstance(received_data["grid"], str):
+                    try:
+                        parsed_grid = json.loads(received_data["grid"])
+                        if isinstance(parsed_grid, list) and all(isinstance(row, list) for row in parsed_grid):
+                            self.grid = parsed_grid
+                        else:
+                            print("Erreur dans le format de la grille reçue.")
+                    except json.JSONDecodeError:
+                        print("Erreur de décodage JSON pour la grille.")
+                else:
+                    print("La clé 'grid' est absente ou n'est pas une chaîne JSON.")
+                    
+            if data.get("type") == "running":
+                self.running = bool(json.loads(data["data"])["running"])
 
-        if data.get("type") == "game_ended":
-            self.game_ended = bool(json.loads(data["data"])["game_ended"])
+            if data.get("type") == "game_ended":
+                self.game_ended = bool(json.loads(data["data"])["game_ended"])
+
+            if data.get("type") == "emptybomb":
+                self.bombs.clear()
+
+            if data.get("type") == "emptyexplosion":
+                self.explosions.clear()
 
 class ClientSocket(Client):
     def __init__(self, username ,server, port, callback):

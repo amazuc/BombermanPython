@@ -19,6 +19,8 @@ class Game():
     global game_ended
     global explosions
     global bombs
+    global emptyBomb
+    global emptyExplosion
     global power_ups
     global clients_sockets
 
@@ -72,10 +74,10 @@ class Game():
     def sendPlayer1(self):
         if len(self.clients_sockets) >= 2 and self.running:
 
-            jsonPlayer1 = {
+            jsonPlayer1 = [{
             "type": "player1",
             "data": self.player[0].to_json()
-            }
+            }]
 
             delimiter = b'\x00'
             try:
@@ -90,10 +92,10 @@ class Game():
     def sendPlayer2(self):
         if len(self.clients_sockets) >= 2 and self.running:
 
-            jsonPlayer2 = {
+            jsonPlayer2 = [{
                     "type": "player2",
                     "data": self.player[1].to_json()
-                }
+                }]
             
             delimiter = b'\x00'
             try:
@@ -107,53 +109,55 @@ class Game():
 
     def sendBombs(self):
         if len(self.clients_sockets) >= 2 and self.running:
+            jsonBombs = [{
+                    "type": "bomb",
+                    "data": bomb.to_json()
+                } for bomb in self.bombs]
+            
             delimiter = b'\x00'
             try:
-                for bomb in self.bombs:
-                    # Conversion de l'objet JSON en chaîne et envoi au client
-                    json_str = json.dumps({
-                        "type": "bomb",
-                        "data": bomb.to_json()
-                    })
-                    json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
-                    
-                    for sock in self.clients_sockets:
-                        sock.sendall(json_str_with_delimiter)
+                # Conversion de l'objet JSON en chaîne et envoi au client
+                json_str = json.dumps(jsonBombs)
+                json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
+                for sock in self.clients_sockets:
+                    sock.sendall(json_str_with_delimiter)
             except socket.error:
                 print("Impossible d'envoyer le message")
 
     def sendExplosions(self):
         if len(self.clients_sockets) >= 2 and self.running:
+
+            jsonExplosions = [{
+                    "type": "explosion",
+                    "data": exlpo.to_json()
+                } for exlpo in self.explosions]
+            
             delimiter = b'\x00'
             try:
-                for explosion in self.explosions:
-                    # Conversion de l'objet JSON en chaîne et envoi au client
-                    json_str = json.dumps({
-                        "type": "explosion",
-                        "data": explosion.to_json()
-                    })
-                    json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
-                    
-                    for sock in self.clients_sockets:
-                        sock.sendall(json_str_with_delimiter)
+                # Conversion de l'objet JSON en chaîne et envoi au client
+                json_str = json.dumps(jsonExplosions)
+                json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
+                for sock in self.clients_sockets:
+                    sock.sendall(json_str_with_delimiter)
             except socket.error:
                 print("Impossible d'envoyer le message")
 
 
     def sendPowerUps(self):
         if len(self.clients_sockets) >= 2 and self.running:
+
+            jsonPowerUps = [{
+                    "type": "power_up",
+                    "data": power.to_json()
+                } for power in self.power_ups]
+            
             delimiter = b'\x00'
             try:
-                for power_up in self.power_ups:
-                    # Conversion de l'objet JSON en chaîne et envoi au client
-                    json_str = json.dumps({
-                        "type": "power_up",
-                        "data": power_up.to_json()
-                    })
-                    json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
-                    
-                    for sock in self.clients_sockets:
-                        sock.sendall(json_str_with_delimiter)
+                # Conversion de l'objet JSON en chaîne et envoi au client
+                json_str = json.dumps(jsonPowerUps)
+                json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
+                for sock in self.clients_sockets:
+                    sock.sendall(json_str_with_delimiter)
             except socket.error:
                 print("Impossible d'envoyer le message")
 
@@ -161,10 +165,10 @@ class Game():
     def sendGrid(self):
         if len(self.clients_sockets) >= 2 and self.running:
 
-            jsonGrid = {
+            jsonGrid = [{
                     "type": "grid",
                     "data": {"grid": json.dumps(self.grid)}
-                }
+                }]
             
             delimiter = b'\x00'
             try:
@@ -179,10 +183,10 @@ class Game():
     def sendRunning(self):
         if len(self.clients_sockets) >= 2 and self.running:
 
-            jsonRunning = {
+            jsonRunning = [{
                     "type": "running",
                     "data": json.dumps({'running': self.running})
-                }
+                }]
             
             delimiter = b'\x00'
             try:
@@ -197,10 +201,10 @@ class Game():
     def sendEnded(self):
         if len(self.clients_sockets) >= 2 and self.running:
 
-            jsonEnded = {
+            jsonEnded = [{
                     "type": "game_ended",
                     "data": json.dumps({'game_ended': self.game_ended})
-                }
+                }]
             
             delimiter = b'\x00'
             try:
@@ -212,11 +216,62 @@ class Game():
             except socket.error:
                 print("Impossible d'envoyer le message")
 
+    def sendEmptyBomb(self):
+         if len(self.clients_sockets) >= 2 and self.running:
+
+            jsonEmptyBomb = [{
+                    "type": "emptybomb"
+                }]
+            
+            delimiter = b'\x00'
+            try:
+                # Conversion de l'objet JSON en chaîne et envoi au client
+                json_str = json.dumps(jsonEmptyBomb)
+                json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
+                for sock in self.clients_sockets:
+                    sock.sendall(json_str_with_delimiter)
+            except socket.error:
+                print("Impossible d'envoyer le message")
+
+    
+    def sendEmptyExplosions(self):
+         if len(self.clients_sockets) >= 2 and self.running:
+
+            jsonEmptyExplosion = [{
+                    "type": "emptyexplosion"
+                }]
+            
+            delimiter = b'\x00'
+            try:
+                # Conversion de l'objet JSON en chaîne et envoi au client
+                json_str = json.dumps(jsonEmptyExplosion)
+                json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
+                for sock in self.clients_sockets:
+                    sock.sendall(json_str_with_delimiter)
+            except socket.error:
+                print("Impossible d'envoyer le message")
+
+    def sendEmptyPowerUp(self):
+         if len(self.clients_sockets) >= 2 and self.running:
+
+            jsonEmptyPowerUp = [{
+                    "type": "emptypower"
+                }]
+            
+            delimiter = b'\x00'
+            try:
+                # Conversion de l'objet JSON en chaîne et envoi au client
+                json_str = json.dumps(jsonEmptyPowerUp)
+                json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
+                for sock in self.clients_sockets:
+                    sock.sendall(json_str_with_delimiter)
+            except socket.error:
+                print("Impossible d'envoyer le message")
+
 
     def receiveData(self, data, adresse) :
         parts = data.split(": ", 1)
         if len(parts) >= 2:
-            username = parts[0]
             instruction = parts[1]
             index = self.find_client_index(adresse)
             if index != -1:
@@ -258,7 +313,6 @@ class Game():
                             self.bombs.append(temp_bomb)
                             self.grid[temp_bomb.pos_x][temp_bomb.pos_y] = 3
                             self.player[index].bomb_limit -= 1
-                            self.sendBombs()
                     elif instruction == "ESCAPE" :
                         self.running = False
         
@@ -313,9 +367,13 @@ class Game():
         # power_ups.append(PowerUp(2, 1, PowerUpType.FIRE))
         clock = pygame.time.Clock()
 
+        self.emptyBomb = False
+
+        self.emptyExplosion = False
+        emptyPower = True
+
         while self.running:
             dt = clock.tick(15)
-            self.sendGrid()
                 
             if not self.game_ended:
                 self.game_ended = self.check_end_game()
@@ -327,6 +385,22 @@ class Game():
         self.power_ups.clear()
 
     def update_bombs(self, dt):
+        if len(self.bombs) >0 :
+            self.sendBombs()
+            self.emptyBomb = True
+        else : 
+            if self.emptyBomb:
+                self.sendEmptyBomb()
+                self.emptyBomb = False
+
+        if len(self.explosions) >0 :
+            self.sendExplosions()
+            self.emptyExplosion = True
+        else : 
+            if self.emptyExplosion:
+                self.sendEmptyExplosions()
+                self.emptyExplosion = False
+
         for b in self.bombs:
             b.update(dt)
             if b.time < 1:
@@ -336,15 +410,13 @@ class Game():
                 exp_temp.explode(self.grid, self.bombs, b, self.power_ups)
                 exp_temp.clear_sectors(self.grid, random, self.power_ups)
                 self.explosions.append(exp_temp)
-                self.sendBombs()
-                self.sendExplosions()
         for pl in self.player:
             pl.check_death(self.explosions)
         for e in self.explosions:
             e.update(dt)
+            self.sendGrid()
             if e.time < 1:
                 self.explosions.remove(e)
-                self.sendExplosions()
 
 
     def check_end_game(self):

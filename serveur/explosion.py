@@ -63,8 +63,7 @@ class Explosion:
             'range': self.range,
             'time': self.time,
             'frame': self.frame,
-            'sectors': self.sectors,
-            'bomber': self.bomber.to_json() if self.bomber else None
+            'sectors': self.sectors
         }
         
         json_data = json.dumps(data)

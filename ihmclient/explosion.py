@@ -6,12 +6,13 @@ class Explosion:
 
     bomber = None
 
-    def __init__(self, x, y, r, t, f):
+    def __init__(self, x, y, r, t = 300, f = 0, se = []):
         self.sourceX = x
         self.sourceY = y
         self.range = r
         self.time = t
         self.frame = f
+        self.sectors = se
 
     def explode(self, map, bombs, b, power_ups):
 
