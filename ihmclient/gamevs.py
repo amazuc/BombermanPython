@@ -94,7 +94,12 @@ class GameVs():
                     (pl.pos_x * (tile_size / 4), pl.pos_y * (tile_size / 4), tile_size, tile_size))
             
             if self.game_ended:
-                tf = self.font.render("Press ESC to go back to menu", False, (153, 153, 255))
+                fin = ""
+                if self.player[0].life :
+                    fin = "Joueur 1"
+                else :
+                    fin ="Joueur 2"
+                tf = self.font.render(fin+" a gagné la partie !"+"\nPress ESC to go back to menu", False, (153, 153, 255))
                 s.blit(tf, (10, 10))
 
         if not self.autrejoueur:
@@ -158,8 +163,7 @@ class GameVs():
             
             if data.get("type") == "explosion":
                 self.explosions.clear()
-                self.explosions.append(Explosion(json.loads(data["data"])["sourceX"],json.loads(data["data"])["sourceY"],json.loads(data["data"])["range"], json.loads(data["data"])["time"],json.loads(data["data"])["frame"],json.loads(data["data"])["sectors"]))
-                explosion_data = json.loads(data["data"])                
+                self.explosions.append(Explosion(json.loads(data["data"])["sourceX"],json.loads(data["data"])["sourceY"],json.loads(data["data"])["range"], json.loads(data["data"])["time"],json.loads(data["data"])["frame"],json.loads(data["data"])["sectors"]))              
                     
             if data.get("type") == "power_up":
                 self.power_ups.clear()

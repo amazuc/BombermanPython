@@ -78,6 +78,8 @@ class Player:
             if pu.pos_x == math.ceil(self.pos_x / Player.TILE_SIZE) \
                     and pu.pos_y == math.ceil(self.pos_y / Player.TILE_SIZE):
                 self.consume_power_up(pu, power_ups)
+                return True
+        return False
 
     def plant_bomb(self, map):
         b = Bomb(self.range, round(self.pos_x / Player.TILE_SIZE), round(self.pos_y / Player.TILE_SIZE), map, self)

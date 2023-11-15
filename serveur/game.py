@@ -6,10 +6,12 @@ import socket
 import signal #identifie les signaux pour kill le programme
 import sys #utilisé pour sortir du programme
 import time
+from enums.power_up_type import PowerUpType
 from clientthread import ClientListener
 from sendjson import Json
 from player import Player
 from explosion import Explosion
+from power_up import PowerUp
 
 class Game():
     global ene_blocks
@@ -84,19 +86,35 @@ class Game():
                     movement = False
                     if instruction == "DOWN" :
                         temp = 0
-                        self.player[index].move(0, 1, self.grid, self.ene_blocks, self.power_ups)
+                        if self.player[index].move(0, 1, self.grid, self.ene_blocks, self.power_ups):
+                            if len(self.power_ups) >0:
+                                self.json.sendPowerUps
+                            else :
+                                self.json.sendEmptyPowerUp
                         movement = True
                     elif instruction == "RIGHT" :
                         temp = 1
-                        self.player[index].move(1, 0, self.grid, self.ene_blocks, self.power_ups)
+                        if self.player[index].move(1, 0, self.grid, self.ene_blocks, self.power_ups):
+                            if len(self.power_ups) >0:
+                                self.json.sendPowerUps
+                            else :
+                                self.json.sendEmptyPowerUp
                         movement = True
                     elif instruction == "UP" :
                         temp = 2
-                        self.player[index].move(0, -1, self.grid, self.ene_blocks, self.power_ups)
+                        if self.player[index].move(0, -1, self.grid, self.ene_blocks, self.power_ups):
+                            if len(self.power_ups) >0:
+                                self.json.sendPowerUps
+                            else :
+                                self.json.sendEmptyPowerUp
                         movement = True
                     elif instruction == "LEFT" :
                         temp = 3
-                        self.player[index].move(-1, 0, self.grid, self.ene_blocks, self.power_ups)
+                        if self.player[index].move(-1, 0, self.grid, self.ene_blocks, self.power_ups):
+                            if len(self.power_ups) >0:
+                                self.json.sendPowerUps
+                            else :
+                                self.json.sendEmptyPowerUp
                         movement = True
                     if temp != self.player[index].direction:
                         self.player[index].frame = 0
@@ -162,8 +180,8 @@ class Game():
         self.json.sendGrid(self.clients_sockets, self.running, self.grid)
         self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
         self.json.sendRunning(self.clients_sockets, self.running)
-        # power_ups.append(PowerUp(1, 2, PowerUpType.BOMB))
-        # power_ups.append(PowerUp(2, 1, PowerUpType.FIRE))
+        power_ups.append(PowerUp(1, 2, PowerUpType.BOMB))
+        power_ups.append(PowerUp(2, 1, PowerUpType.FIRE))
         clock = pygame.time.Clock()
         self.emptyBomb = False
         self.emptyExplosion = False
@@ -172,6 +190,10 @@ class Game():
             dt = clock.tick(15)          
             if not self.game_ended:
                 self.game_ended = self.check_end_game()
+                if self.game_ended:
+                    self.json.sendPlayer1(self.clients_sockets, self.running, self.player[0])
+                    self.json.sendPlayer2(self.clients_sockets, self.running, self.player[1])
+                    self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
             self.update_bombs(dt)
 
         self.explosions.clear()
@@ -209,16 +231,17 @@ class Game():
         for e in self.explosions:
             e.update(dt)
             self.json.sendGrid(self.clients_sockets, self.running, self.grid)
+            self.json.sendPowerUps(self.clients_sockets, self.running, self.power_ups)
             if e.time < 1:
                 self.explosions.remove(e)
 
 
     def check_end_game(self):
+        end = False
         for pl in self.player:
-            if pl.life:
-                return False
-
-        return True
+            if not pl.life:
+                end=True
+        return end
 
 
 if __name__ == "__main__":
