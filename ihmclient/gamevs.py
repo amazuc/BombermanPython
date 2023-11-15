@@ -195,6 +195,9 @@ class GameVs():
             if data.get("type") == "emptyexplosion":
                 self.explosions.clear()
 
+            if data.get("type") == "emptypower":
+                self.power_ups.clear()
+
 class ClientSocket(Client):
     def __init__(self, username ,server, port, callback):
         super(ClientSocket,self).__init__(username, server, port)
