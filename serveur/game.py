@@ -2,14 +2,12 @@ import json
 import pygame
 import sys
 import random
-
 import socket
 import signal #identifie les signaux pour kill le programme
 import sys #utilisé pour sortir du programme
 import time
 from clientthread import ClientListener
 from sendjson import Json
-
 from player import Player
 from explosion import Explosion
 
@@ -110,7 +108,6 @@ class Game():
                             self.player[index].frame += 1
                     self.json.sendPlayer1(self.clients_sockets, self.running, self.player[0])
                     self.json.sendPlayer2(self.clients_sockets, self.running, self.player[1])
-
                     if instruction == "QUIT" :
                         sys.exit(0)
                     if instruction == "SPACE" :
@@ -138,12 +135,9 @@ class Game():
         self.bombs.clear()
         self.explosions.clear()
         self.power_ups.clear()
-
         self.player = [Player(4,4),Player(44,44)]
-
         self.ene_blocks.append(self.player[0])
-        self.ene_blocks.append(self.player[1])
-        
+        self.ene_blocks.append(self.player[1])     
         self.running = True
         self.main()
 
@@ -157,7 +151,6 @@ class Game():
                     continue
                 if random.randint(0, 9) < 7:
                     self.grid[i][j] = 2
-
         return
 
 
@@ -172,18 +165,13 @@ class Game():
         # power_ups.append(PowerUp(1, 2, PowerUpType.BOMB))
         # power_ups.append(PowerUp(2, 1, PowerUpType.FIRE))
         clock = pygame.time.Clock()
-
         self.emptyBomb = False
-
         self.emptyExplosion = False
-        emptyPower = True
 
         while self.running:
-            dt = clock.tick(15)
-                
+            dt = clock.tick(15)          
             if not self.game_ended:
                 self.game_ended = self.check_end_game()
-
             self.update_bombs(dt)
 
         self.explosions.clear()
@@ -231,7 +219,6 @@ class Game():
                 return False
 
         return True
-
 
 
 if __name__ == "__main__":

@@ -2,9 +2,7 @@ import json
 from time import sleep
 import pygame
 import sys
-
 from client import Client
-
 from bomb import Bomb
 from player import Player
 from explosion import Explosion
@@ -37,52 +35,38 @@ class GameVs():
         self.client = ClientSocket(username, ip, port, self.callBackData)
         self.client.listen()
         self.font = pygame.font.SysFont('Bebas', scale)
-
         self.bombs.clear()
         self.explosions.clear()
         self.power_ups.clear()
-
         self.player = [Player(), Player()]
         self.player[0].load_animations(scale)
         self.player[1].load_animations(scale)
 
         grass_img = pygame.image.load('images/terrain/grass.png')
         grass_img = pygame.transform.scale(grass_img, (scale, scale))
-
         block_img = pygame.image.load('images/terrain/block.png')
         block_img = pygame.transform.scale(block_img, (scale, scale))
-
         box_img = pygame.image.load('images/terrain/box.png')
         box_img = pygame.transform.scale(box_img, (scale, scale))
-
         bomb1_img = pygame.image.load('images/bomb/1.png')
         bomb1_img = pygame.transform.scale(bomb1_img, (scale, scale))
-
         bomb2_img = pygame.image.load('images/bomb/2.png')
         bomb2_img = pygame.transform.scale(bomb2_img, (scale, scale))
-
         bomb3_img = pygame.image.load('images/bomb/3.png')
         bomb3_img = pygame.transform.scale(bomb3_img, (scale, scale))
-
         explosion1_img = pygame.image.load('images/explosion/1.png')
         explosion1_img = pygame.transform.scale(explosion1_img, (scale, scale))
-
         explosion2_img = pygame.image.load('images/explosion/2.png')
         explosion2_img = pygame.transform.scale(explosion2_img, (scale, scale))
-
         explosion3_img = pygame.image.load('images/explosion/3.png')
         explosion3_img = pygame.transform.scale(explosion3_img, (scale, scale))
-
         terrain_images = [grass_img, block_img, box_img, grass_img]
         bomb_images = [bomb1_img, bomb2_img, bomb3_img]
         explosion_images = [explosion1_img, explosion2_img, explosion3_img]
-
         power_up_bomb_img = pygame.image.load('images/power_up/bomb.png')
         power_up_bomb_img = pygame.transform.scale(power_up_bomb_img, (scale, scale))
-
         power_up_fire_img = pygame.image.load('images/power_up/fire.png')
         power_up_fire_img = pygame.transform.scale(power_up_fire_img, (scale, scale))
-
         power_ups_images = [power_up_bomb_img, power_up_fire_img]
 
         self.main(surface, scale, terrain_images, bomb_images, explosion_images, power_ups_images)
