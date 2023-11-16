@@ -180,8 +180,8 @@ class Game():
         self.json.sendGrid(self.clients_sockets, self.running, self.grid)
         self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
         self.json.sendRunning(self.clients_sockets, self.running)
-        power_ups.append(PowerUp(1, 2, PowerUpType.BOMB))
-        power_ups.append(PowerUp(2, 1, PowerUpType.FIRE))
+        self.power_ups.append(PowerUp(1, 2, PowerUpType.BOMB))
+        self.power_ups.append(PowerUp(2, 1, PowerUpType.FIRE))
         clock = pygame.time.Clock()
         self.emptyBomb = False
         self.emptyExplosion = False
