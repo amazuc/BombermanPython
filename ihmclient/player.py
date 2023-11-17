@@ -32,7 +32,10 @@ class Player:
         self.frame = fr 
 
     def setAnim(self, anim):
-        self.animation = anim            
+        self.animation = anim  
+
+    def setLife(self, life):
+        self.life = life            
 
     def move(self, dx, dy, grid, enemys, power_ups):
         tempx = int(self.pos_x / Player.TILE_SIZE)

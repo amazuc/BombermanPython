@@ -169,7 +169,8 @@ class Player:
                 'animation': self.animation,
                 'range': self.range,
                 'bomb_limit': self.bomb_limit,
-                'TILE_SIZE': self.TILE_SIZE
+                'TILE_SIZE': self.TILE_SIZE,
+                'life': self.life
             }
         json_data = json.dumps(data)
         return json_data

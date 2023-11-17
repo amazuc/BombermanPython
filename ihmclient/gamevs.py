@@ -151,12 +151,14 @@ class GameVs():
                 self.player[0].setY(int(json.loads(data["data"])["pos_y"]))
                 self.player[0].setDir(json.loads(data["data"])["direction"])
                 self.player[0].setFrame(json.loads(data["data"])["frame"])
+                self.player[0].setLife(json.loads(data["data"])["life"])
 
             if data.get("type") == "player2":
                 self.player[1].setX(json.loads(data["data"])["pos_x"])
                 self.player[1].setY(json.loads(data["data"])["pos_y"])
                 self.player[1].setDir(json.loads(data["data"])["direction"])
                 self.player[1].setFrame(json.loads(data["data"])["frame"])
+                self.player[1].setLife(json.loads(data["data"])["life"])
 
             if data.get("type") == "bomb":
                 if not clear :
