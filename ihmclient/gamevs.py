@@ -12,7 +12,7 @@ from power_up import PowerUp
 class GameVs():
 
     def game_init(self, surface, scale, username, ip, port, nbJoueur):
-        self.nbJoueur = nbJoueur
+        self.nbJoueur = int(nbJoueur)
         self.ene_blocks = []
         self.running = True
         self.bombs = []
@@ -30,19 +30,10 @@ class GameVs():
         self.explosions.clear()
         self.power_ups.clear()
         self.player_type_mapping = {"player1": 0,"player2": 1,"player3": 2,"player4": 3}
-        if int(nbJoueur) == 2 :
-            self.player = [Player(), Player()]
-        if int(nbJoueur) == 3 :
-            self.player = [Player(), Player(), Player()]
-            self.player[2].load_animations(scale)
-        if int(nbJoueur) == 4 :
-            self.player = [Player(), Player(), Player(), Player()]
-            self.player[2].load_animations(scale)
-            self.player[3].load_animations(scale)
-        self.player[0].load_animations(scale)
-        self.player[1].load_animations(scale)
+        self.player = [Player() for _ in range(self.nbJoueur)]
+        for player in self.player:
+            player.load_animations(scale)
         
-
         grass_img = pygame.image.load('images/terrain/grass.png')
         grass_img = pygame.transform.scale(grass_img, (scale, scale))
         block_img = pygame.image.load('images/terrain/block.png')
@@ -79,13 +70,10 @@ class GameVs():
             for i in range(len(grid)):
                 for j in range(len(grid[i])):
                     s.blit(terrain_images[grid[i][j]], (i * tile_size, j * tile_size, tile_size, tile_size))
-
             for pu in self.power_ups:
                 s.blit(power_ups_images[pu.type.value], (pu.pos_x * tile_size, pu.pos_y * tile_size, tile_size, tile_size))
-
             for x in self.bombs:
                 s.blit(bomb_images[x.frame], (x.pos_x * tile_size, x.pos_y * tile_size, tile_size, tile_size))
-
             for y in self.explosions:
                 for x in y.sectors:
                     s.blit(explosion_images[y.frame], (x[0] * tile_size, x[1] * tile_size, tile_size, tile_size))
@@ -96,15 +84,10 @@ class GameVs():
             
             if self.game_ended:
                 fin = ""
-                if self.player[0].life :
-                    fin = "Joueur 1"
-                if self.player[1].life :
-                    fin ="Joueur 2"
-                if int(self.nbJoueur) >=3 and self.player[2].life :
-                    fin ="Joueur 3"
-                if int(self.nbJoueur) > 3 and self.player[3].life :
-                    fin ="Joueur 4"
-                tf = self.font.render(fin+" a gagné la partie !"+"\nPress ESC to go back to menu", False, (153, 153, 255))
+                for i, player in enumerate(self.player, start=1):
+                    if i <= self.nbJoueur and player.life:
+                        fin = f"Joueur {i}"
+                tf = self.font.render(fin + " a gagné la partie !"+"\nPress ESC to go back to menu", False, (153, 153, 255))
                 s.blit(tf, (10, 10))
 
         if not self.autrejoueur:
@@ -116,7 +99,6 @@ class GameVs():
 
     def main(self, s, tile_size, terrain_images, bomb_images, explosion_images, power_ups_images):
         while self.running:
-        #met à jour la fenêtre du joueur
             self.draw(s, self.grid, tile_size, terrain_images, bomb_images, explosion_images, power_ups_images)
             if(self.autrejoueur):                    
                 #recupère et envoi la direction du joueur
@@ -129,7 +111,6 @@ class GameVs():
                     self.client.send('UP')
                 elif keys[pygame.K_LEFT]:
                     self.client.send('LEFT')
-
                 sleep(0.1)
                 #recupère et envoi l'action du joueur'
                 for e in pygame.event.get():
