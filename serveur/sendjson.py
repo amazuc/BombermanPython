@@ -6,10 +6,10 @@ class Json():
     global nbJoueur
 
     def __init__(self, nbJoueur) :
-        self.nbJoueur = nbJoueur
+        self.nbJoueur = int(nbJoueur)
     
     def sendPlayer1(self, clients_sockets, running, player):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonPlayer1 = [{
             "type": "player1",
             "data": player.to_json()
@@ -26,7 +26,7 @@ class Json():
                 print("Impossible d'envoyer le message")
 
     def sendPlayer2(self, clients_sockets, running, player):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonPlayer2 = [{
                     "type": "player2",
                     "data": player.to_json()
@@ -42,7 +42,7 @@ class Json():
                 print("Impossible d'envoyer le message")
 
     def sendPlayer3(self, clients_sockets, running, player):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonPlayer3 = [{
                     "type": "player3",
                     "data": player.to_json()
@@ -58,7 +58,7 @@ class Json():
                 print("Impossible d'envoyer le message")
 
     def sendPlayer4(self, clients_sockets, running, player):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonPlayer4 = [{
                     "type": "player4",
                     "data": player.to_json()
@@ -75,7 +75,7 @@ class Json():
 
 
     def sendBombs(self, clients_sockets, running, bombs):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonBombs = [{
                     "type": "bomb",
                     "data": bomb.to_json()
@@ -92,7 +92,7 @@ class Json():
 
 
     def sendExplosions(self, clients_sockets, running, explosions):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonExplosions = [{
                     "type": "explosion",
                     "data": exlpo.to_json()
@@ -109,7 +109,7 @@ class Json():
 
 
     def sendPowerUps(self, clients_sockets, running, power_ups):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonPowerUps = [{
                     "type": "power_up",
                     "data": power.to_json()
@@ -126,7 +126,7 @@ class Json():
 
 
     def sendGrid(self, clients_sockets, running, grid):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonGrid = [{
                     "type": "grid",
                     "data": {"grid": json.dumps(grid)}
@@ -143,7 +143,7 @@ class Json():
 
 
     def sendRunning(self, clients_sockets, running):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonRunning = [{
                     "type": "running",
                     "data": json.dumps({'running': running})
@@ -160,7 +160,7 @@ class Json():
 
 
     def sendEnded(self, clients_sockets, running, game_ended):
-        if len(clients_sockets) >= 2 and running:
+        if len(clients_sockets) >= self.nbJoueur and running:
             jsonEnded = [{
                     "type": "game_ended",
                     "data": json.dumps({'game_ended': game_ended})
@@ -177,7 +177,7 @@ class Json():
 
 
     def sendEmptyBomb(self, clients_sockets, running):
-         if len(clients_sockets) >= 2 and running:
+         if len(clients_sockets) >= self.nbJoueur and running:
             jsonEmptyBomb = [{
                     "type": "emptybomb"
                 }]            
@@ -193,7 +193,7 @@ class Json():
 
     
     def sendEmptyExplosions(self, clients_sockets, running):
-         if len(clients_sockets) >= 2 and running:
+         if len(clients_sockets) >= self.nbJoueur and running:
             jsonEmptyExplosion = [{
                     "type": "emptyexplosion"
                 }]            
@@ -209,7 +209,7 @@ class Json():
 
 
     def sendEmptyPowerUp(self, clients_sockets, running):
-         if len(clients_sockets) >= 2 and running:
+         if len(clients_sockets) >= self.nbJoueur and running:
             jsonEmptyPowerUp = [{
                     "type": "emptypower"
                 }]            
