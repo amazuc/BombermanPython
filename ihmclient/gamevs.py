@@ -4,6 +4,7 @@ import pygame
 import sys
 from client import Client
 from bomb import Bomb
+from enums.power_up_type import PowerUpType
 from player import Player
 from explosion import Explosion
 from power_up import PowerUp
@@ -167,7 +168,10 @@ class GameVs():
                     
             if data.get("type") == "power_up":
                 self.power_ups.clear()
-                self.power_ups.append(PowerUp(json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"],json.loads(data["data"])["type"]))
+                if json.loads(data["data"])["type"] == 0 :
+                    self.power_ups.append(PowerUp(json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"],PowerUpType.BOMB))
+                else :
+                    self.power_ups.append(PowerUp(json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"],PowerUpType.FIRE))
             
             if data.get("type") == "grid":
                 received_data = data.get("data", {})

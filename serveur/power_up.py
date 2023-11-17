@@ -12,8 +12,9 @@ class PowerUp:
         data = {
             'pos_x': self.pos_x,
             'pos_y': self.pos_y,
-            'type': self.type
+            'type': self.type.value
         }
+        print(data)
         
         json_data = json.dumps(data)
         return json_data

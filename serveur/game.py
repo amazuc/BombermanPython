@@ -88,33 +88,33 @@ class Game():
                         temp = 0
                         if self.player[index].move(0, 1, self.grid, self.ene_blocks, self.power_ups):
                             if len(self.power_ups) >0:
-                                self.json.sendPowerUps
+                                self.json.sendPowerUps(self.clients_sockets, self.running, self.power_ups)
                             else :
-                                self.json.sendEmptyPowerUp
+                                self.json.sendEmptyPowerUp(self.clients_sockets, self.running)
                         movement = True
                     elif instruction == "RIGHT" :
                         temp = 1
                         if self.player[index].move(1, 0, self.grid, self.ene_blocks, self.power_ups):
                             if len(self.power_ups) >0:
-                                self.json.sendPowerUps
+                                self.json.sendPowerUps(self.clients_sockets, self.running, self.power_ups)
                             else :
-                                self.json.sendEmptyPowerUp
+                                self.json.sendEmptyPowerUp(self.clients_sockets, self.running)
                         movement = True
                     elif instruction == "UP" :
                         temp = 2
                         if self.player[index].move(0, -1, self.grid, self.ene_blocks, self.power_ups):
                             if len(self.power_ups) >0:
-                                self.json.sendPowerUps
+                                self.json.sendPowerUps(self.clients_sockets, self.running, self.power_ups)
                             else :
-                                self.json.sendEmptyPowerUp
+                                self.json.sendEmptyPowerUp(self.clients_sockets, self.running)
                         movement = True
                     elif instruction == "LEFT" :
                         temp = 3
                         if self.player[index].move(-1, 0, self.grid, self.ene_blocks, self.power_ups):
                             if len(self.power_ups) >0:
-                                self.json.sendPowerUps
+                                self.json.sendPowerUps(self.clients_sockets, self.running, self.power_ups)
                             else :
-                                self.json.sendEmptyPowerUp
+                                self.json.sendEmptyPowerUp(self.clients_sockets, self.running)
                         movement = True
                     if temp != self.player[index].direction:
                         self.player[index].frame = 0
@@ -180,8 +180,6 @@ class Game():
         self.json.sendGrid(self.clients_sockets, self.running, self.grid)
         self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
         self.json.sendRunning(self.clients_sockets, self.running)
-        self.power_ups.append(PowerUp(1, 2, PowerUpType.BOMB))
-        self.power_ups.append(PowerUp(2, 1, PowerUpType.FIRE))
         clock = pygame.time.Clock()
         self.emptyBomb = False
         self.emptyExplosion = False
