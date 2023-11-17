@@ -53,7 +53,7 @@ class Game():
         self.running = False
         self.nbJoueur = 2
 
-    def signal_handler(self, signal):
+    def signal_handler(self, signal, data):
         self.listener.close()
         self.echo("QUIT")
 
@@ -79,7 +79,7 @@ class Game():
                 self.game_init()
 
     def remove_socket(self, socket):
-        self.client_sockets.remove(socket)
+        self.clients_sockets.remove(socket)
 
 
     def receiveData(self, data, adresse) :

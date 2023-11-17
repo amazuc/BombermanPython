@@ -22,7 +22,7 @@ class ClientListener(threading.Thread):
             data= ""
             try:
                 data = self.socket.recv(1024).decode('UTF-8')
-            except socket.error:
+            except OSError as e:
                 print("Unable to receive data")
             self.handle_msg(data)
             time.sleep(0.1)
@@ -32,7 +32,7 @@ class ClientListener(threading.Thread):
         self.listening = False
         self.socket.close()
         self.server.remove_socket(self.socket)
-        self.server.echo("{0} has quit\n".format(self.username))
+        print("{0} has quit\n".format(self.username))
 
     def handle_msg(self, data):
         #print(self.address, "sent :", data)

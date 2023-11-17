@@ -153,6 +153,8 @@ class GameVs():
                             self.client.send('SPACE')
                         elif e.key == pygame.K_ESCAPE:
                             self.client.send('ESCAPE')
+                            self.client.tidy_up()
+                            self.running = False
 
             
     def callBackData(self, datas):

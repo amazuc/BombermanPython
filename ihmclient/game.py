@@ -241,7 +241,7 @@ def main(s, tile_size, show_path, terrain_images, bomb_images, explosion_images,
                     grid[temp_bomb.pos_x][temp_bomb.pos_y] = 3
                     player.bomb_limit -= 1
                 elif e.key == pygame.K_ESCAPE:
-                    running = False
+                    running = False 
 
         update_bombs(grid, dt)
 
