@@ -1,9 +1,6 @@
-import json
 import threading
 import pygame
-import sys
 import random
-import sys #utilisé pour sortir du programme
 from sendjson import Json
 from player import Player
 from explosion import Explosion
@@ -51,6 +48,65 @@ class Game():
         self.running = True
         self.game_thread = threading.Thread(target=self.main, args=())
         self.game_thread.start()
+
+    def main(self):
+        self.grid = [row[:] for row in self.grid]
+        self.generate_map()
+        for i, pl in enumerate(self.player):
+            self.json.sendPlayer(self.clients_sockets, self.running, pl, str(i+1))
+        self.json.sendGrid(self.clients_sockets, self.running, self.grid)
+        self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
+        self.json.sendRunning(self.clients_sockets, self.running)
+        clock = pygame.time.Clock()
+
+        while self.running:
+            dt = clock.tick(15)          
+            if not self.game_ended:
+                self.game_ended = self.check_end_game()
+                if self.game_ended:
+                    for i, pl in enumerate(self.player):
+                        self.json.sendPlayer(self.clients_sockets, self.running, pl, str(i+1))
+                    self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
+            self.update_bombs(dt)
+
+        self.explosions.clear()
+        self.ene_blocks.clear()
+        self.power_ups.clear()
+
+    def update_bombs(self, dt):
+        if len(self.bombs) >0 :
+            self.json.sendBombs(self.clients_sockets, self.running, self.bombs)
+            self.emptyBomb = True
+        else : 
+            if self.emptyBomb:
+                self.json.sendEmptyBomb(self.clients_sockets, self.running)
+                self.emptyBomb = False
+
+        if len(self.explosions) >0 :
+            self.json.sendExplosions(self.clients_sockets, self.running, self.explosions)
+            self.emptyExplosion = True
+        else : 
+            if self.emptyExplosion:
+                self.json.sendEmptyExplosions(self.clients_sockets, self.running)
+                self.emptyExplosion = False
+
+        for b in self.bombs:
+            b.update(dt)
+            if b.time < 1:
+                b.bomber.bomb_limit += 1
+                self.grid[b.pos_x][b.pos_y] = 0
+                exp_temp = Explosion(b.pos_x, b.pos_y, b.range)
+                exp_temp.explode(self.grid, self.bombs, b, self.power_ups)
+                exp_temp.clear_sectors(self.grid, random, self.power_ups)
+                self.explosions.append(exp_temp)
+        for pl in self.player:
+            pl.check_death(self.explosions)
+        for e in self.explosions:
+            e.update(dt)
+            self.json.sendGrid(self.clients_sockets, self.running, self.grid)
+            self.json.sendPowerUps(self.clients_sockets, self.running, self.power_ups)
+            if e.time < 1:
+                self.explosions.remove(e)
 
 
     def receiveData(self, data, adresse) :
@@ -102,15 +158,8 @@ class Game():
                             self.player[index].frame = 0
                         else:
                             self.player[index].frame += 1
-                    self.json.sendPlayer1(self.clients_sockets, self.running, self.player[0])
-                    self.json.sendPlayer2(self.clients_sockets, self.running, self.player[1])
-                    if(self.nbJoueur == 3):
-                        self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
-                    if(self.nbJoueur == 4):
-                        self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
-                        self.json.sendPlayer4(self.clients_sockets, self.running, self.player[3])
-                    if instruction == "QUIT" :
-                        sys.exit(0)
+                    for i, pl in enumerate(self.player):
+                        self.json.sendPlayer(self.clients_sockets, self.running, pl, str(i+1))
                     if instruction == "SPACE" :
                         if self.player[index].bomb_limit != 0 :
                             temp_bomb = self.player[index].plant_bomb(self.grid)
@@ -138,77 +187,6 @@ class Game():
                 if random.randint(0, 9) < 7:
                     self.grid[i][j] = 2
         return
-
-
-    def main(self):
-        self.grid = [row[:] for row in self.grid]
-        self.generate_map()
-        self.json.sendPlayer1(self.clients_sockets, self.running, self.player[0])
-        self.json.sendPlayer2(self.clients_sockets, self.running, self.player[1])
-        if(self.nbJoueur == 3):
-            self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
-        if(self.nbJoueur == 4):
-            self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
-            self.json.sendPlayer4(self.clients_sockets, self.running, self.player[3])
-        self.json.sendGrid(self.clients_sockets, self.running, self.grid)
-        self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
-        self.json.sendRunning(self.clients_sockets, self.running)
-        clock = pygame.time.Clock()
-
-        while self.running:
-            dt = clock.tick(15)          
-            if not self.game_ended:
-                self.game_ended = self.check_end_game()
-                if self.game_ended:
-                    self.json.sendPlayer1(self.clients_sockets, self.running, self.player[0])
-                    self.json.sendPlayer2(self.clients_sockets, self.running, self.player[1])
-                    if(self.nbJoueur == 3):
-                        self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
-                    if(self.nbJoueur == 4):
-                        self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
-                        self.json.sendPlayer4(self.clients_sockets, self.running, self.player[3])
-                    self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
-            self.update_bombs(dt)
-
-        self.explosions.clear()
-        self.ene_blocks.clear()
-        self.power_ups.clear()
-
-    def update_bombs(self, dt):
-        if len(self.bombs) >0 :
-            self.json.sendBombs(self.clients_sockets, self.running, self.bombs)
-            self.emptyBomb = True
-        else : 
-            if self.emptyBomb:
-                self.json.sendEmptyBomb(self.clients_sockets, self.running)
-                self.emptyBomb = False
-
-        if len(self.explosions) >0 :
-            self.json.sendExplosions(self.clients_sockets, self.running, self.explosions)
-            self.emptyExplosion = True
-        else : 
-            if self.emptyExplosion:
-                self.json.sendEmptyExplosions(self.clients_sockets, self.running)
-                self.emptyExplosion = False
-
-        for b in self.bombs:
-            b.update(dt)
-            if b.time < 1:
-                b.bomber.bomb_limit += 1
-                self.grid[b.pos_x][b.pos_y] = 0
-                exp_temp = Explosion(b.pos_x, b.pos_y, b.range)
-                exp_temp.explode(self.grid, self.bombs, b, self.power_ups)
-                exp_temp.clear_sectors(self.grid, random, self.power_ups)
-                self.explosions.append(exp_temp)
-        for pl in self.player:
-            pl.check_death(self.explosions)
-        for e in self.explosions:
-            e.update(dt)
-            self.json.sendGrid(self.clients_sockets, self.running, self.grid)
-            self.json.sendPowerUps(self.clients_sockets, self.running, self.power_ups)
-            if e.time < 1:
-                self.explosions.remove(e)
-
 
     def check_end_game(self):
         i = 0

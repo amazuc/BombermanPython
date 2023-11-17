@@ -10,19 +10,7 @@ from explosion import Explosion
 from power_up import PowerUp
 
 class GameVs():
-    global BACKGROUND_COLOR
-    global font
-    global ene_blocks
-    global bombs
-    global explosions
-    global power_ups
-    global running
-    global autrejoueur
-    global game_ended
-    global client
-    global grid
-    global nbJoueur
-    
+
     def game_init(self, surface, scale, username, ip, port, nbJoueur):
         self.nbJoueur = nbJoueur
         self.ene_blocks = []
@@ -41,6 +29,7 @@ class GameVs():
         self.bombs.clear()
         self.explosions.clear()
         self.power_ups.clear()
+        self.player_type_mapping = {"player1": 0,"player2": 1,"player3": 2,"player4": 3}
         if int(nbJoueur) == 2 :
             self.player = [Player(), Player()]
         if int(nbJoueur) == 3 :
@@ -145,7 +134,6 @@ class GameVs():
                 #recupère et envoi l'action du joueur'
                 for e in pygame.event.get():
                     if e.type == pygame.QUIT:
-                        self.client.send('QUIT')
                         sys.exit(0)
                     elif e.type == pygame.KEYDOWN:
                         if e.key == pygame.K_SPACE:
@@ -161,33 +149,13 @@ class GameVs():
             self.autrejoueur = True
         clear = False
         for data in datas:
-            if data.get("type") == "player1":
-                self.player[0].setX(int(json.loads(data["data"])["pos_x"]))
-                self.player[0].setY(int(json.loads(data["data"])["pos_y"]))
-                self.player[0].setDir(json.loads(data["data"])["direction"])
-                self.player[0].setFrame(json.loads(data["data"])["frame"])
-                self.player[0].setLife(bool(json.loads(data["data"])["life"]))
-
-            if data.get("type") == "player2":
-                self.player[1].setX(json.loads(data["data"])["pos_x"])
-                self.player[1].setY(json.loads(data["data"])["pos_y"])
-                self.player[1].setDir(json.loads(data["data"])["direction"])
-                self.player[1].setFrame(json.loads(data["data"])["frame"])
-                self.player[1].setLife(bool(json.loads(data["data"])["life"]))
-
-            if data.get("type") == "player3":
-                self.player[2].setX(json.loads(data["data"])["pos_x"])
-                self.player[2].setY(json.loads(data["data"])["pos_y"])
-                self.player[2].setDir(json.loads(data["data"])["direction"])
-                self.player[2].setFrame(json.loads(data["data"])["frame"])
-                self.player[2].setLife(bool(json.loads(data["data"])["life"]))
-
-            if data.get("type") == "player4":
-                self.player[3].setX(json.loads(data["data"])["pos_x"])
-                self.player[3].setY(json.loads(data["data"])["pos_y"])
-                self.player[3].setDir(json.loads(data["data"])["direction"])
-                self.player[3].setFrame(json.loads(data["data"])["frame"])
-                self.player[3].setLife(bool(json.loads(data["data"])["life"]))
+            if data.get("type") == "player1" or data.get("type") == "player2" or data.get("type") == "player3" or data.get("type") == "player4":
+                player_index = self.player_type_mapping.get(data.get("type"))
+                self.player[player_index].setX(int(json.loads(data["data"])["pos_x"]))
+                self.player[player_index].setY(int(json.loads(data["data"])["pos_y"]))
+                self.player[player_index].setDir(json.loads(data["data"])["direction"])
+                self.player[player_index].setFrame(json.loads(data["data"])["frame"])
+                self.player[player_index].setLife(bool(json.loads(data["data"])["life"]))
 
             if data.get("type") == "bomb":
                 if not clear :
