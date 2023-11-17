@@ -144,6 +144,7 @@ class GameVs():
         print(datas)
         if datas is not None :
             self.autrejoueur = True
+        clear = False
         for data in datas:
             if data.get("type") == "player1":
                 self.player[0].setX(int(json.loads(data["data"])["pos_x"]))
@@ -158,16 +159,22 @@ class GameVs():
                 self.player[1].setFrame(json.loads(data["data"])["frame"])
 
             if data.get("type") == "bomb":
-                self.bombs.clear()
+                if not clear :
+                    clear = True
+                    self.bombs.clear()
                 self.bombs.append(Bomb(json.loads(data["data"])["range"],json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"]))
                 self.bombs[len(self.bombs)-1].setTime(int(json.loads(data["data"])["time"]))
             
             if data.get("type") == "explosion":
-                self.explosions.clear()
+                if not clear :
+                    clear = True
+                    self.explosions.clear()
                 self.explosions.append(Explosion(json.loads(data["data"])["sourceX"],json.loads(data["data"])["sourceY"],json.loads(data["data"])["range"], json.loads(data["data"])["time"],json.loads(data["data"])["frame"],json.loads(data["data"])["sectors"]))              
                     
             if data.get("type") == "power_up":
-                self.power_ups.clear()
+                if not clear :
+                    clear = True
+                    self.power_ups.clear()
                 if json.loads(data["data"])["type"] == 0 :
                     self.power_ups.append(PowerUp(json.loads(data["data"])["pos_x"],json.loads(data["data"])["pos_y"],PowerUpType.BOMB))
                 else :
