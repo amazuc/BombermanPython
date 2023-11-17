@@ -61,7 +61,7 @@ def main_background():
 
 def connexion():
     gamevs = GameVs()
-    gamevs.game_init(surface, TILE_SIZE, username_input.get_value(), ip_input.get_value(), port_input.get_value(), joueur_input.get_value())
+    gamevs.game_init(surface, TILE_SIZE, username_input.get_value(), ip_input.get_value(), port_input.get_value(), joueur_input.get_value()[0])
 
 def menu_loop():
     pygame.init()
@@ -109,7 +109,7 @@ def menu_loop():
     username_input = play_vsplayer.add.text_input('Username : ', default='test', maxchar=15)
     ip_input = play_vsplayer.add.text_input('Adresse IP : ', default='localhost', maxchar=15)
     port_input = play_vsplayer.add.text_input('Port : ', default='59001', maxchar=15)
-    joueur_input = play_vsplayer.add.text_input('Nombres Joueurs : ', default='3', maxchar=15)
+    joueur_input = play_vsplayer.add.selector('Nombres Joueurs : ', ["2", "3", "4"])
     play_vsplayer.add.button('Valider', connexion)
 
     play_options.add.selector("Character 1", [("Player", Algorithm.PLAYER), ("DFS", Algorithm.DFS),
