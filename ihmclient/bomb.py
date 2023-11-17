@@ -1,16 +1,11 @@
 class Bomb:
     frame = 0
 
-    def __init__(self, x, y, time):
-        self.pos_x = x
-        self.pos_y = y
-        self.time = time
-
-    def __init__(self, r, x, y, map= None, bomber= None):
+    def __init__(self, r, x, y, time = 3000, map= None, bomber= None):
         self.range = r
         self.pos_x = x
         self.pos_y = y
-        self.time = 3000
+        self.time = time
         self.bomber = bomber
         self.sectors = []
         if map is not None :

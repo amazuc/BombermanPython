@@ -70,7 +70,7 @@ class Enemy:
             self.move(map, bombs, explosions, enemy)
 
     def plant_bomb(self, map):
-        b = Bomb(self.range, round(self.pos_x / Enemy.TILE_SIZE), round(self.pos_y / Enemy.TILE_SIZE), map, self)
+        b = Bomb(self.range, round(self.pos_x / Enemy.TILE_SIZE), round(self.pos_y / Enemy.TILE_SIZE),3000, map, self)
         self.bomb_limit -= 1
         return b
 

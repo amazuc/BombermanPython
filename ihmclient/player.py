@@ -96,7 +96,7 @@ class Player:
 
 
     def plant_bomb(self, map):
-        b = Bomb(self.range, round(self.pos_x / Player.TILE_SIZE), round(self.pos_y / Player.TILE_SIZE), map, self)
+        b = Bomb(self.range, round(self.pos_x / Player.TILE_SIZE), round(self.pos_y / Player.TILE_SIZE),3000, map, self)
         return b
 
     def check_death(self, exp):
