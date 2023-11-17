@@ -22,7 +22,7 @@ class GameVs():
     global client
     global grid
     
-    def game_init(self, surface, scale, username, ip, port):
+    def game_init(self, surface, scale, username, ip, port, nbJoueur):
         self.ene_blocks = []
         self.running = True
         self.bombs = []
@@ -33,15 +33,24 @@ class GameVs():
         self.client = None
         self.BACKGROUND_COLOR = (107, 142, 35)
         self.grid = []
-        self.client = ClientSocket(username, ip, port, self.callBackData)
+        self.client = ClientSocket(username, ip, port, nbJoueur, self.callBackData)
         self.client.listen()
         self.font = pygame.font.SysFont('Bebas', scale)
         self.bombs.clear()
         self.explosions.clear()
         self.power_ups.clear()
-        self.player = [Player(), Player()]
+        if int(nbJoueur) == 2 :
+            self.player = [Player(), Player()]
+        if int(nbJoueur) == 3 :
+            self.player = [Player(), Player(), Player()]
+            self.player[2].load_animations(scale)
+        if int(nbJoueur) == 4 :
+            self.player = [Player(), Player(), Player(), Player()]
+            self.player[2].load_animations(scale)
+            self.player[3].load_animations(scale)
         self.player[0].load_animations(scale)
         self.player[1].load_animations(scale)
+        
 
         grass_img = pygame.image.load('images/terrain/grass.png')
         grass_img = pygame.transform.scale(grass_img, (scale, scale))
@@ -98,8 +107,12 @@ class GameVs():
                 fin = ""
                 if self.player[0].life :
                     fin = "Joueur 1"
-                else :
+                if self.player[1].life :
                     fin ="Joueur 2"
+                if self.player[2].life :
+                    fin ="Joueur 3"
+                if self.player[3].life :
+                    fin ="Joueur 4"
                 tf = self.font.render(fin+" a gagné la partie !"+"\nPress ESC to go back to menu", False, (153, 153, 255))
                 s.blit(tf, (10, 10))
 
@@ -160,6 +173,20 @@ class GameVs():
                 self.player[1].setFrame(json.loads(data["data"])["frame"])
                 self.player[1].setLife(json.loads(data["data"])["life"])
 
+            if data.get("type") == "player3":
+                self.player[2].setX(json.loads(data["data"])["pos_x"])
+                self.player[2].setY(json.loads(data["data"])["pos_y"])
+                self.player[2].setDir(json.loads(data["data"])["direction"])
+                self.player[2].setFrame(json.loads(data["data"])["frame"])
+                self.player[2].setLife(json.loads(data["data"])["life"])
+
+            if data.get("type") == "player4":
+                self.player[3].setX(json.loads(data["data"])["pos_x"])
+                self.player[3].setY(json.loads(data["data"])["pos_y"])
+                self.player[3].setDir(json.loads(data["data"])["direction"])
+                self.player[3].setFrame(json.loads(data["data"])["frame"])
+                self.player[3].setLife(json.loads(data["data"])["life"])
+
             if data.get("type") == "bomb":
                 if not clear :
                     clear = True
@@ -212,8 +239,8 @@ class GameVs():
                 self.power_ups.clear()
 
 class ClientSocket(Client):
-    def __init__(self, username ,server, port, callback):
-        super(ClientSocket,self).__init__(username, server, port)
+    def __init__(self, username ,server, port, nbJoueur, callback):
+        super(ClientSocket,self).__init__(username, server, port, nbJoueur)
         self.callback = callback
 
     def handle_msg(self,data):

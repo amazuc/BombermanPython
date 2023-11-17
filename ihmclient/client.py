@@ -6,11 +6,11 @@ import re
 
 class Client():
 
-    def __init__(self, username, server, port):
+    def __init__(self, username, server, port, nbJoueur):
         self.socket= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((server, int(port)))
         self.username= username
-        self.send("USERNAME {0}".format(username))
+        self.send(nbJoueur)
         self.listening= True
 
     def listener(self):

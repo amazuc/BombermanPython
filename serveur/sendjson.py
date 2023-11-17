@@ -2,6 +2,11 @@ import json
 import socket
 
 class Json():
+
+    global nbJoueur
+
+    def __init__(self, nbJoueur) :
+        self.nbJoueur = nbJoueur
     
     def sendPlayer1(self, clients_sockets, running, player):
         if len(clients_sockets) >= 2 and running:
@@ -30,6 +35,38 @@ class Json():
             try:
                 # Conversion de l'objet JSON en chaîne et envoi au client
                 json_str = json.dumps(jsonPlayer2)
+                json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
+                for sock in clients_sockets:
+                    sock.sendall(json_str_with_delimiter)
+            except socket.error:
+                print("Impossible d'envoyer le message")
+
+    def sendPlayer3(self, clients_sockets, running, player):
+        if len(clients_sockets) >= 2 and running:
+            jsonPlayer3 = [{
+                    "type": "player3",
+                    "data": player.to_json()
+                }]            
+            delimiter = b'\x00'
+            try:
+                # Conversion de l'objet JSON en chaîne et envoi au client
+                json_str = json.dumps(jsonPlayer3)
+                json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
+                for sock in clients_sockets:
+                    sock.sendall(json_str_with_delimiter)
+            except socket.error:
+                print("Impossible d'envoyer le message")
+
+    def sendPlayer4(self, clients_sockets, running, player):
+        if len(clients_sockets) >= 2 and running:
+            jsonPlayer4 = [{
+                    "type": "player4",
+                    "data": player.to_json()
+                }]            
+            delimiter = b'\x00'
+            try:
+                # Conversion de l'objet JSON en chaîne et envoi au client
+                json_str = json.dumps(jsonPlayer4)
                 json_str_with_delimiter = json_str.encode("UTF-8") + delimiter
                 for sock in clients_sockets:
                     sock.sendall(json_str_with_delimiter)

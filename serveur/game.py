@@ -25,6 +25,7 @@ class Game():
     global power_ups
     global clients_sockets
     global json
+    global nbJoueur
 
     global grid
 
@@ -50,11 +51,17 @@ class Game():
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
         self.running = False
-        self.json = Json()
+        self.nbJoueur = 2
 
     def signal_handler(self, signal):
         self.listener.close()
         self.echo("QUIT")
+
+    def initJoueur(self, data) :
+        parts = data.split(": ", 1)
+        if len(parts) >= 2:
+            self.nbJoueur = int(parts[1])
+        self.json = Json(self.nbJoueur)
 
     def run(self):
         while True:
@@ -68,7 +75,7 @@ class Game():
             client_thread= ClientListener(self, client_socket, client_adress, self)
             client_thread.start()
             time.sleep(0.1)
-            if len(self.clients_sockets) >= 2 and not self.running:
+            if len(self.clients_sockets) >= self.nbJoueur and not self.running:
                 self.game_init()
 
     def remove_socket(self, socket):
@@ -126,6 +133,11 @@ class Game():
                             self.player[index].frame += 1
                     self.json.sendPlayer1(self.clients_sockets, self.running, self.player[0])
                     self.json.sendPlayer2(self.clients_sockets, self.running, self.player[1])
+                    if(self.nbJoueur == 3):
+                        self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
+                    if(self.nbJoueur == 4):
+                        self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
+                        self.json.sendPlayer4(self.clients_sockets, self.running, self.player[3])
                     if instruction == "QUIT" :
                         sys.exit(0)
                     if instruction == "SPACE" :
@@ -153,9 +165,18 @@ class Game():
         self.bombs.clear()
         self.explosions.clear()
         self.power_ups.clear()
-        self.player = [Player(4,4),Player(44,44)]
+        if self.nbJoueur == 2 :
+            self.player = [Player(4,4),Player(44,44)]
+        if(self.nbJoueur == 3):
+            self.player = [Player(4,4),Player(44,44),Player(4,44)]
+            self.ene_blocks.append(self.player[2])
+        if(self.nbJoueur == 4):
+            self.player = [Player(4,4),Player(44,44),Player(4,44),Player(44,4)]
+            self.ene_blocks.append(self.player[2])
+            self.ene_blocks.append(self.player[3])
         self.ene_blocks.append(self.player[0])
-        self.ene_blocks.append(self.player[1])     
+        self.ene_blocks.append(self.player[1])
+         
         self.running = True
         self.main()
 
@@ -177,6 +198,11 @@ class Game():
         self.generate_map()
         self.json.sendPlayer1(self.clients_sockets, self.running, self.player[0])
         self.json.sendPlayer2(self.clients_sockets, self.running, self.player[1])
+        if(self.nbJoueur == 3):
+            self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
+        if(self.nbJoueur == 4):
+            self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
+            self.json.sendPlayer4(self.clients_sockets, self.running, self.player[3])
         self.json.sendGrid(self.clients_sockets, self.running, self.grid)
         self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
         self.json.sendRunning(self.clients_sockets, self.running)
@@ -191,6 +217,11 @@ class Game():
                 if self.game_ended:
                     self.json.sendPlayer1(self.clients_sockets, self.running, self.player[0])
                     self.json.sendPlayer2(self.clients_sockets, self.running, self.player[1])
+                    if(self.nbJoueur == 3):
+                        self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
+                    if(self.nbJoueur == 4):
+                        self.json.sendPlayer3(self.clients_sockets, self.running, self.player[2])
+                        self.json.sendPlayer4(self.clients_sockets, self.running, self.player[3])
                     self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
             self.update_bombs(dt)
 
@@ -235,11 +266,11 @@ class Game():
 
 
     def check_end_game(self):
-        end = False
+        i = 0
         for pl in self.player:
-            if not pl.life:
-                end=True
-        return end
+            if pl.life:
+                i = i + 1
+        return i < 2
 
 
 if __name__ == "__main__":
