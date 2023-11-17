@@ -149,7 +149,6 @@ class GameVs():
                         sys.exit(0)
                     elif e.type == pygame.KEYDOWN:
                         if e.key == pygame.K_SPACE:
-                            print('SPACE')
                             self.client.send('SPACE')
                         elif e.key == pygame.K_ESCAPE:
                             self.client.send('ESCAPE')
