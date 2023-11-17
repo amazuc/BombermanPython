@@ -55,7 +55,7 @@ class Game():
 
     def signal_handler(self, signal, data):
         self.listener.close()
-        self.echo("QUIT")
+        self.print("QUIT")
 
     def initJoueur(self, data) :
         parts = data.split(": ", 1)
