@@ -14,7 +14,6 @@ class PowerUp:
             'pos_y': self.pos_y,
             'type': self.type.value
         }
-        print(data)
         
         json_data = json.dumps(data)
         return json_data
