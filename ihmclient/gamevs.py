@@ -3,6 +3,7 @@ from time import sleep
 import pygame
 import sys
 from client import Client
+from grid import Grid
 from bomb import Bomb
 from enums.power_up_type import PowerUpType
 from player import Player
@@ -22,7 +23,7 @@ class GameVs():
         self.game_ended = False
         self.client = None
         self.BACKGROUND_COLOR = (107, 142, 35)
-        self.grid = []
+        self.grid = Grid.getGrid()
         self.client = ClientSocket(username, ip, port, nbJoueur, self.callBackData)
         self.client.listen()
         self.font = pygame.font.SysFont('Bebas', scale)
@@ -65,34 +66,35 @@ class GameVs():
 
 
     def draw(self, s, grid, tile_size, terrain_images, bomb_images, explosion_images, power_ups_images):
-        s.fill(self.BACKGROUND_COLOR)
-        if self.autrejoueur :      
-            for i in range(len(grid)):
-                for j in range(len(grid[i])):
-                    s.blit(terrain_images[grid[i][j]], (i * tile_size, j * tile_size, tile_size, tile_size))
-            for pu in self.power_ups:
-                s.blit(power_ups_images[pu.type.value], (pu.pos_x * tile_size, pu.pos_y * tile_size, tile_size, tile_size))
-            for x in self.bombs:
-                s.blit(bomb_images[x.frame], (x.pos_x * tile_size, x.pos_y * tile_size, tile_size, tile_size))
-            for y in self.explosions:
-                for x in y.sectors:
-                    s.blit(explosion_images[y.frame], (x[0] * tile_size, x[1] * tile_size, tile_size, tile_size))
-            for pl in self.player:
-                if pl.life:
-                    s.blit(pl.animation[pl.direction][pl.frame],
-                    (pl.pos_x * (tile_size / 4), pl.pos_y * (tile_size / 4), tile_size, tile_size))
-            
-            if self.game_ended:
-                fin = ""
-                for i, player in enumerate(self.player, start=1):
-                    if i <= self.nbJoueur and player.life:
-                        fin = f"Joueur {i}"
-                tf = self.font.render(fin + " a gagné la partie !"+"\nPress ESC to go back to menu", False, (153, 153, 255))
-                s.blit(tf, (10, 10))
+        s.fill(self.BACKGROUND_COLOR)   
+        for i in range(len(grid)):
+            for j in range(len(grid[i])):
+                s.blit(terrain_images[grid[i][j]], (i * tile_size, j * tile_size, tile_size, tile_size))
+        for pu in self.power_ups:
+            s.blit(power_ups_images[pu.type.value], (pu.pos_x * tile_size, pu.pos_y * tile_size, tile_size, tile_size))
+        for x in self.bombs:
+            s.blit(bomb_images[x.frame], (x.pos_x * tile_size, x.pos_y * tile_size, tile_size, tile_size))
+        for y in self.explosions:
+            for x in y.sectors:
+                s.blit(explosion_images[y.frame], (x[0] * tile_size, x[1] * tile_size, tile_size, tile_size))
+        for pl in self.player:
+            if pl.life:
+                s.blit(pl.animation[pl.direction][pl.frame],
+                (pl.pos_x * (tile_size / 4), pl.pos_y * (tile_size / 4), tile_size, tile_size))
+        
+        if self.game_ended:
+            fin = ""
+            for i, player in enumerate(self.player, start=1):
+                if i <= self.nbJoueur and player.life:
+                    fin = f"Joueur {i}"
+            tf = self.font.render(fin + " a gagné la partie !", False, (255, 255, 255))
+            s.blit(tf, (65, 120))
+            tf = self.font.render("Press ESC to go back to menu !", False, (255, 255, 255))
+            s.blit(tf, (50, 200))
 
         if not self.autrejoueur:
-            tf = self.font.render("En attente d'un autre joueur !", False, (153, 153, 255))
-            s.blit(tf, (10, 10))    
+            tf = self.font.render("En attente d'autres joueurs !", False, (255, 255, 255))
+            s.blit(tf, (50, 95))
 
         pygame.display.update()
 

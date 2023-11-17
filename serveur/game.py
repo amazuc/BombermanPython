@@ -2,6 +2,7 @@ import threading
 import pygame
 import random
 from sendjson import Json
+from grid import Grid
 from player import Player
 from explosion import Explosion
 
@@ -11,19 +12,7 @@ class Game():
         self.nbJoueur = nbJoueur
         self.clients_sockets = clients_sockets
         self.json = Json(self.nbJoueur)
-        self.grid = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+        self.grid = Grid.getGrid()
         self.game_ended = False
         self.bombs = []
         self.explosions = []
