@@ -21,8 +21,10 @@ class GameVs():
     global game_ended
     global client
     global grid
+    global nbJoueur
     
     def game_init(self, surface, scale, username, ip, port, nbJoueur):
+        self.nbJoueur = nbJoueur
         self.ene_blocks = []
         self.running = True
         self.bombs = []
@@ -109,9 +111,9 @@ class GameVs():
                     fin = "Joueur 1"
                 if self.player[1].life :
                     fin ="Joueur 2"
-                if self.player[2].life :
+                if int(self.nbJoueur) >=3 and self.player[2].life :
                     fin ="Joueur 3"
-                if self.player[3].life :
+                if int(self.nbJoueur) > 3 and self.player[3].life :
                     fin ="Joueur 4"
                 tf = self.font.render(fin+" a gagné la partie !"+"\nPress ESC to go back to menu", False, (153, 153, 255))
                 s.blit(tf, (10, 10))
@@ -164,28 +166,28 @@ class GameVs():
                 self.player[0].setY(int(json.loads(data["data"])["pos_y"]))
                 self.player[0].setDir(json.loads(data["data"])["direction"])
                 self.player[0].setFrame(json.loads(data["data"])["frame"])
-                self.player[0].setLife(json.loads(data["data"])["life"])
+                self.player[0].setLife(bool(json.loads(data["data"])["life"]))
 
             if data.get("type") == "player2":
                 self.player[1].setX(json.loads(data["data"])["pos_x"])
                 self.player[1].setY(json.loads(data["data"])["pos_y"])
                 self.player[1].setDir(json.loads(data["data"])["direction"])
                 self.player[1].setFrame(json.loads(data["data"])["frame"])
-                self.player[1].setLife(json.loads(data["data"])["life"])
+                self.player[1].setLife(bool(json.loads(data["data"])["life"]))
 
             if data.get("type") == "player3":
                 self.player[2].setX(json.loads(data["data"])["pos_x"])
                 self.player[2].setY(json.loads(data["data"])["pos_y"])
                 self.player[2].setDir(json.loads(data["data"])["direction"])
                 self.player[2].setFrame(json.loads(data["data"])["frame"])
-                self.player[2].setLife(json.loads(data["data"])["life"])
+                self.player[2].setLife(bool(json.loads(data["data"])["life"]))
 
             if data.get("type") == "player4":
                 self.player[3].setX(json.loads(data["data"])["pos_x"])
                 self.player[3].setY(json.loads(data["data"])["pos_y"])
                 self.player[3].setDir(json.loads(data["data"])["direction"])
                 self.player[3].setFrame(json.loads(data["data"])["frame"])
-                self.player[3].setLife(json.loads(data["data"])["life"])
+                self.player[3].setLife(bool(json.loads(data["data"])["life"]))
 
             if data.get("type") == "bomb":
                 if not clear :
