@@ -158,7 +158,6 @@ class GameVs():
 
             
     def callBackData(self, datas):
-        print(datas)
         if datas is not None :
             self.autrejoueur = True
         clear = False
