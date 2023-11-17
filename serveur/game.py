@@ -1,35 +1,19 @@
 import json
+import threading
 import pygame
 import sys
 import random
-import socket
-import signal #identifie les signaux pour kill le programme
 import sys #utilisé pour sortir du programme
-import time
-from enums.power_up_type import PowerUpType
-from clientthread import ClientListener
 from sendjson import Json
 from player import Player
 from explosion import Explosion
-from power_up import PowerUp
 
 class Game():
-    global ene_blocks
-    global player
-    global running
-    global game_ended
-    global explosions
-    global bombs
-    global emptyBomb
-    global emptyExplosion
-    global power_ups
-    global clients_sockets
-    global json
-    global nbJoueur
 
-    global grid
-
-    def __init__(self, port):
+    def __init__(self, nbJoueur, clients_sockets):
+        self.nbJoueur = nbJoueur
+        self.clients_sockets = clients_sockets
+        self.json = Json(self.nbJoueur)
         self.grid = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
@@ -43,43 +27,30 @@ class Game():
                 [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-        self.listener= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.listener.bind(('', port))
-        self.listener.listen(1)
-        print("Listening on port", port)
-        self.clients_sockets= []
-        signal.signal(signal.SIGINT, self.signal_handler)
-        signal.signal(signal.SIGTERM, self.signal_handler)
-        self.running = False
-        self.nbJoueur = 2
-
-    def signal_handler(self, signal, data):
-        self.listener.close()
-        print("QUIT")
-
-    def initJoueur(self, data) :
-        parts = data.split(": ", 1)
-        if len(parts) >= 2:
-            self.nbJoueur = int(parts[1])
-        self.json = Json(self.nbJoueur)
-
-    def run(self):
-        while True:
-            print("listening new customers")
-            try:
-                (client_socket, client_adress) = self.listener.accept()
-            except socket.error:
-                sys.exit("Cannot connect clients")
-            self.clients_sockets.append(client_socket)
-            print("Start the thread for client:", client_adress)
-            client_thread= ClientListener(self, client_socket, client_adress, self)
-            client_thread.start()
-            time.sleep(0.1)
-            if len(self.clients_sockets) >= self.nbJoueur and not self.running:
-                self.game_init()
-
-    def remove_socket(self, socket):
-        self.clients_sockets.remove(socket)
+        self.game_ended = False
+        self.bombs = []
+        self.explosions = []
+        self.power_ups = []
+        self.ene_blocks = []
+        self.bombs.clear()
+        self.explosions.clear()
+        self.power_ups.clear()
+        self.emptyBomb = False
+        self.emptyExplosion = False
+        if self.nbJoueur == 2 :
+            self.player = [Player(4,4),Player(44,44)]
+        if(self.nbJoueur == 3):
+            self.player = [Player(4,4),Player(44,44),Player(4,44)]
+            self.ene_blocks.append(self.player[2])
+        if(self.nbJoueur == 4):
+            self.player = [Player(4,4),Player(44,44),Player(4,44),Player(44,4)]
+            self.ene_blocks.append(self.player[2])
+            self.ene_blocks.append(self.player[3])
+        self.ene_blocks.append(self.player[0])
+        self.ene_blocks.append(self.player[1])
+        self.running = True
+        self.game_thread = threading.Thread(target=self.main, args=())
+        self.game_thread.start()
 
 
     def receiveData(self, data, adresse) :
@@ -156,30 +127,6 @@ class Game():
                 return index
         return -1
 
-    def game_init(self):
-        self.game_ended = False
-        self.bombs = []
-        self.explosions = []
-        self.power_ups = []
-        self.ene_blocks = []
-        self.bombs.clear()
-        self.explosions.clear()
-        self.power_ups.clear()
-        if self.nbJoueur == 2 :
-            self.player = [Player(4,4),Player(44,44)]
-        if(self.nbJoueur == 3):
-            self.player = [Player(4,4),Player(44,44),Player(4,44)]
-            self.ene_blocks.append(self.player[2])
-        if(self.nbJoueur == 4):
-            self.player = [Player(4,4),Player(44,44),Player(4,44),Player(44,4)]
-            self.ene_blocks.append(self.player[2])
-            self.ene_blocks.append(self.player[3])
-        self.ene_blocks.append(self.player[0])
-        self.ene_blocks.append(self.player[1])
-         
-        self.running = True
-        self.main()
-
 
     def generate_map(self):
         for i in range(1, len(self.grid) - 1):
@@ -207,8 +154,6 @@ class Game():
         self.json.sendEnded(self.clients_sockets, self.running, self.game_ended)
         self.json.sendRunning(self.clients_sockets, self.running)
         clock = pygame.time.Clock()
-        self.emptyBomb = False
-        self.emptyExplosion = False
 
         while self.running:
             dt = clock.tick(15)          
@@ -271,8 +216,3 @@ class Game():
             if pl.life:
                 i = i + 1
         return i < 2
-
-
-if __name__ == "__main__":
-    server= Game(59001)
-    server.run()
